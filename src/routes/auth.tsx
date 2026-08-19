@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { makeLegacyAccountLoginReady } from "@/lib/auth.functions";
+import { credentialsSchema, friendlyAuthError, signupSchema } from "@/lib/auth-errors";
 import { getMyBloodBank, getMyHospital } from "@/lib/bloodconnect.functions";
 
 type AuthSearch = { mode?: "login" | "signup"; next?: string };
@@ -29,79 +29,107 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        if (next) window.location.href = next;
-        else navigate({ to: "/dashboard" });
-      }
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (data.session) {
+          if (next) window.location.href = next;
+          else navigate({ to: "/dashboard" });
+        }
+      })
+      .catch(() => {
+        // No session available (or auth unreachable) — stay on the auth page.
+      });
   }, [navigate, next]);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const email = String(f.get("email") ?? "").trim().toLowerCase();
-    const password = String(f.get("password") ?? "");
-    let { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error && /confirm|verified|verification/i.test(error.message)) {
-      await makeLegacyAccountLoginReady({ data: { email, password } });
-      ({ data, error } = await supabase.auth.signInWithPassword({ email, password }));
+    const parsed = credentialsSchema.safeParse({
+      email: f.get("email") ?? "",
+      password: f.get("password") ?? "",
+    });
+    if (!parsed.success) {
+      return toast.error(parsed.error.issues[0]?.message ?? "Please check your details.");
     }
-    setLoading(false);
-    if (error || !data.session) {
-      return toast.error(error?.message || "Invalid credentials. Please check your email and password.");
+    const { email, password } = parsed.data;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.session) {
+        return toast.error(friendlyAuthError(error));
+      }
+      toast.success("Welcome back!");
+      await navigateToBestDashboard();
+    } catch (err) {
+      toast.error(friendlyAuthError(err));
+    } finally {
+      setLoading(false);
     }
-    toast.success("Welcome back!");
-    await navigateToBestDashboard();
   }
 
   async function handleSignup(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault(); setLoading(true);
+    e.preventDefault();
     const f = new FormData(e.currentTarget);
-    const fullName = String(f.get("full_name") ?? "").trim();
-    const phone = String(f.get("phone") ?? "").trim();
-    const email = String(f.get("email") ?? "").trim().toLowerCase();
-    const password = String(f.get("password") ?? "");
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { full_name: fullName, phone },
-      },
+    const parsed = signupSchema.safeParse({
+      fullName: f.get("full_name") ?? "",
+      phone: f.get("phone") ?? "",
+      email: f.get("email") ?? "",
+      password: f.get("password") ?? "",
     });
-    if (error) {
-      const existingAccount = /already|registered|exists/i.test(error.message);
-      if (existingAccount) {
-        const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-        setLoading(false);
-        if (signInErr || !signInData.session) return toast.error("An account already exists for this email, but the password does not match.");
-        toast.success("Welcome back!");
-        await navigateToBestDashboard();
-        return;
-      }
-      setLoading(false);
-      return toast.error(error.message);
+    if (!parsed.success) {
+      return toast.error(parsed.error.issues[0]?.message ?? "Please check your details.");
     }
-    const duplicateWithoutNewIdentity = data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
-    let userId = data.user?.id;
-    if (!data.session) {
-      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) {
-        setLoading(false);
-        toast.error(duplicateWithoutNewIdentity ? "An account already exists for this email, but the password does not match." : "Account created, but login is waiting for email confirmation. Please sign in after confirming your email.");
+    const { fullName, phone, email, password } = parsed.data;
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: { full_name: fullName, phone },
+        },
+      });
+
+      if (error) {
         setTab("login");
-        return;
+        return toast.error(friendlyAuthError(error));
       }
-      userId = signInData.user?.id;
+
+      // Supabase returns a user with an empty `identities` array when the
+      // email is already registered (it does not error, for privacy).
+      const alreadyRegistered =
+        !!data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+      if (alreadyRegistered) {
+        setTab("login");
+        return toast.error("Email already registered. Please sign in instead.");
+      }
+
+      // No session means the provider requires email confirmation.
+      if (!data.session) {
+        setTab("login");
+        return toast.success("Account created. Please verify your email, then sign in.");
+      }
+
+      const userId = data.session.user.id;
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert({ id: userId, full_name: fullName, phone });
+      if (profileError) {
+        console.error("[auth] profile upsert failed", profileError);
+      }
+
+      toast.success("Welcome to BloodConnect!");
+      if (next) window.location.href = next;
+      else navigate({ to: "/dashboard" });
+    } catch (err) {
+      toast.error(friendlyAuthError(err));
+    } finally {
+      setLoading(false);
     }
-    if (userId) {
-      await supabase.from("profiles").upsert({ id: userId, full_name: fullName, phone });
-    }
-    setLoading(false);
-    toast.success("Welcome to BloodConnect!");
-    if (next) window.location.href = next;
-    else navigate({ to: "/dashboard" });
   }
 
   async function navigateToBestDashboard() {
