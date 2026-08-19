@@ -7,11 +7,25 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
+// Pick the server build target from the host's own environment variables so the
+// same repo deploys anywhere without editing this file:
+//   - Vercel            -> VERCEL=1        -> `vercel` (Build Output API)
+//   - Netlify           -> NETLIFY=true    -> `netlify`
+//   - Cloudflare Pages  -> CF_PAGES=1      -> `cloudflare_pages`
+//   - Anything else     -> NITRO_PRESET    -> e.g. `node_server`, `bun`, `deno_server`
+// Inside Lovable no variable is set and the default (Cloudflare) is used.
+function resolvePreset(): string | undefined {
+  if (process.env.NITRO_PRESET) return process.env.NITRO_PRESET;
+  if (process.env.VERCEL) return "vercel";
+  if (process.env.NETLIFY) return "netlify";
+  if (process.env.CF_PAGES) return "cloudflare_pages";
+  return undefined;
+}
+
+const preset = resolvePreset();
+
 export default defineConfig({
-  // Inside Lovable the preset is always Cloudflare. On Vercel (VERCEL=1 is set
-  // automatically during their build) we pin nitro's `vercel` preset so the
-  // SSR/server-function runtime is emitted as Vercel Build Output API.
-  ...(process.env.VERCEL ? { nitro: { preset: "vercel" as const } } : {}),
+  ...(preset ? { nitro: { preset: preset as never } } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
