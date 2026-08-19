@@ -27,6 +27,8 @@ function AuthPage() {
   const { mode, next } = Route.useSearch();
   const [tab, setTab] = useState<"login" | "signup">(mode ?? "login");
   const [loading, setLoading] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth
@@ -144,6 +146,43 @@ function AuthPage() {
     return navigate({ to: "/dashboard" });
   }
 
+  async function handleGoogle() {
+    setOauthLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}${next ?? "/dashboard"}` },
+      });
+      if (error) toast.error(friendlyAuthError(error));
+    } catch (err) {
+      toast.error(friendlyAuthError(err));
+    } finally {
+      setOauthLoading(false);
+    }
+  }
+
+  async function handleForgot(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const email = String(f.get("email") ?? "").trim().toLowerCase();
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return toast.error("Please enter a valid email address.");
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) return toast.error(friendlyAuthError(error));
+      toast.success("If that email is registered, a reset link is on its way.");
+      setForgot(false);
+    } catch (err) {
+      toast.error(friendlyAuthError(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md p-8 shadow-elegant">
@@ -157,13 +196,35 @@ function AuthPage() {
             <TabsTrigger value="signup">Register</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
+            {forgot ? (
+              <form onSubmit={handleForgot} className="space-y-4 mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Enter your email and we'll send you a link to reset your password.
+                </p>
+                <Field icon={<Mail className="h-4 w-4" />} label="Email" name="email" type="email" required />
+                <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
+                  {loading ? "Sending..." : "Send reset link"}
+                </Button>
+                <button type="button" className="w-full text-sm text-muted-foreground hover:text-foreground" onClick={() => setForgot(false)}>
+                  Back to sign in
+                </button>
+              </form>
+            ) : (
             <form onSubmit={handleLogin} className="space-y-4 mt-4">
               <Field icon={<Mail className="h-4 w-4" />} label="Email" name="email" type="email" required />
               <Field icon={<Lock className="h-4 w-4" />} label="Password" name="password" type="password" required minLength={6} />
+              <div className="flex justify-end -mt-2">
+                <button type="button" className="text-sm text-primary hover:underline" onClick={() => setForgot(true)}>
+                  Forgot password?
+                </button>
+              </div>
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
+              <OrDivider />
+              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
             </form>
+            )}
           </TabsContent>
           <TabsContent value="signup">
             <form onSubmit={handleSignup} className="space-y-4 mt-4">
@@ -174,11 +235,37 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Creating account..." : "Create account"}
               </Button>
+              <OrDivider />
+              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
             </form>
           </TabsContent>
         </Tabs>
       </Card>
     </div>
+  );
+}
+
+function OrDivider() {
+  return (
+    <div className="flex items-center gap-3 py-1">
+      <span className="h-px flex-1 bg-border" />
+      <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
+      <span className="h-px flex-1 bg-border" />
+    </div>
+  );
+}
+
+function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
+  return (
+    <Button type="button" variant="outline" className="w-full gap-2" onClick={onClick} disabled={disabled}>
+      <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.2-2.2H12v4h6.6c-.1 1.1-.9 2.8-2.5 3.9l-.02.15 3.6 2.8.25.03c2.3-2.1 3.6-5.2 3.6-8.7Z" />
+        <path fill="#34A853" d="M12 24c3.3 0 6-1.1 8-2.9l-3.8-3c-1 .7-2.4 1.2-4.2 1.2a7.3 7.3 0 0 1-6.9-5l-.14.01-3.7 2.9-.05.14A12 12 0 0 0 12 24Z" />
+        <path fill="#FBBC05" d="M5.1 14.3a7.4 7.4 0 0 1-.4-2.3c0-.8.15-1.6.39-2.3v-.15l-3.8-2.9-.12.06A12 12 0 0 0 0 12c0 1.9.5 3.8 1.2 5.3l3.9-3Z" />
+        <path fill="#EB4335" d="M12 4.7c2.3 0 3.9 1 4.8 1.8l3.5-3.4C18 1.2 15.3 0 12 0A12 12 0 0 0 1.2 6.7l3.9 3A7.3 7.3 0 0 1 12 4.7Z" />
+      </svg>
+      {disabled ? "Connecting..." : "Continue with Google"}
+    </Button>
   );
 }
 
