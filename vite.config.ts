@@ -8,6 +8,10 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
 export default defineConfig({
+  // Inside Lovable the preset is always Cloudflare. On Vercel (VERCEL=1 is set
+  // automatically during their build) we pin nitro's `vercel` preset so the
+  // SSR/server-function runtime is emitted as Vercel Build Output API.
+  ...(process.env.VERCEL ? { nitro: { preset: "vercel" as const } } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
