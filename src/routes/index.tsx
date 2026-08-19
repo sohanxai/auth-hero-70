@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
 });
 
 const CAMPS = [
-  { date: "Jun 12", month: "2026", title: "City Hospital Mega Camp", org: "Apollo Hospitals", city: "Mumbai", area: "Bandra West", slots: 120, filled: 84 },
+  { date: "Jun 12", month: "2026", title: "Shalini Tai Mghe Hospital", org: "Apollo Hospitals", city: "Mumbai", area: "Bandra West", slots: 120, filled: 84 },
   { date: "Jun 18", month: "2026", title: "Tech Park Donation Drive", org: "Fortis Healthcare", city: "Bengaluru", area: "Whitefield", slots: 80, filled: 52 },
   { date: "Jun 25", month: "2026", title: "Community Lifesavers Camp", org: "Red Cross Society", city: "Delhi", area: "Connaught Place", slots: 150, filled: 41 },
   { date: "Jul 03", month: "2026", title: "University Wellness Fair", org: "Manipal Hospitals", city: "Hyderabad", area: "Gachibowli", slots: 100, filled: 18 },
@@ -417,7 +417,7 @@ function Home() {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { n: "Rutuja A.", r: "Patient's daughter", t: "BloodConnect found 3 O- donors within 8 minutes during my mother's surgery. Life-saving." },
+            { n: "Himanshu", r: "Patient's daughter", t: "BloodConnect found 3 O- donors within 8 minutes during my mother's surgery. Life-saving." },
             { n: "Sohan Akare", r: "Website Admin", t: "We've reduced our emergency blood-sourcing time by 70% since partnering with BloodConnect." },
             { n: "Dr. Pawan Talwekar", r: "Donor • 6× Lifesaver", t: "I've donated 6 times through the platform. The reminders and reliability score keep me motivated." },
           ].map((tm) => (

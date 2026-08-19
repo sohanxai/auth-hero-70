@@ -11,7 +11,7 @@ export const Route = createFileRoute("/camps")({
 });
 
 const ALL_CAMPS = [
-  { date: "Jun 12, 2026", title: "City Hospital Mega Camp", org: "Apollo Hospitals", city: "Mumbai", area: "Bandra West", slots: 120, filled: 84 },
+  { date: "Jun 12, 2026", title: "Shalini Tai Mghe Hospital", org: "Apollo Hospitals", city: "Mumbai", area: "Bandra West", slots: 120, filled: 84 },
   { date: "Jun 18, 2026", title: "Shalinitai Meghe Hospital Sawangi", org: "Fortis Healthcare", city: "Bengaluru", area: "Whitefield", slots: 80, filled: 52 },
   { date: "Jun 25, 2026", title: "Civil Hospital Wardha", org: "Red Cross Society", city: "Delhi", area: "Connaught Place", slots: 150, filled: 41 },
   { date: "Jul 03, 2026", title: "University Wellness Fair", org: "Manipal Hospitals", city: "Hyderabad", area: "Gachibowli", slots: 100, filled: 18 },
