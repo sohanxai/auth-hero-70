@@ -1,0 +1,242 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://versysjqidqcvzkchemy.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "bloodconnect-mcp",
+      "version": "0.1.0",
+      "title": "BloodConnect MCP"
+    },
+    "tools": [
+      {
+        "name": "search_donors",
+        "title": "Search blood donors",
+        "description": "Find available blood donors by blood group and city.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "blood_group": {
+              "type": "string",
+              "enum": [
+                "A+",
+                "A-",
+                "B+",
+                "B-",
+                "AB+",
+                "AB-",
+                "O+",
+                "O-"
+              ],
+              "description": "Donor blood group."
+            },
+            "city": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "City name."
+            }
+          },
+          "required": [
+            "blood_group",
+            "city"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_blood_banks",
+        "title": "List blood banks",
+        "description": "List blood banks in a given city with contact info and inventory.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "city": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "City name."
+            }
+          },
+          "required": [
+            "city"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_hospitals",
+        "title": "List hospitals",
+        "description": "List verified partner hospitals, optionally filtered by city.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "city": {
+              "description": "Optional city filter.",
+              "type": "string",
+              "maxLength": 80
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_active_blood_requests",
+        "title": "List active blood requests",
+        "description": "List currently active emergency blood requests.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_donor_profile",
+        "title": "Get my donor profile",
+        "description": "Return the signed-in user's donor profile (if registered).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "set_my_availability",
+        "title": "Set my donor availability",
+        "description": "Toggle the signed-in donor's availability for donations.",
+        "annotations": {
+          "readOnlyHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "is_available": {
+              "type": "boolean",
+              "description": "Whether the donor is currently available."
+            }
+          },
+          "required": [
+            "is_available"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_blood_request",
+        "title": "Create blood request",
+        "description": "Create an emergency blood request as the signed-in user.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "patient_name": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100
+            },
+            "blood_group": {
+              "type": "string",
+              "enum": [
+                "A+",
+                "A-",
+                "B+",
+                "B-",
+                "AB+",
+                "AB-",
+                "O+",
+                "O-"
+              ]
+            },
+            "units": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            },
+            "hospital": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 200
+            },
+            "contact_phone": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 20
+            },
+            "urgency": {
+              "type": "string",
+              "enum": [
+                "critical",
+                "high",
+                "normal"
+              ]
+            },
+            "city": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 80
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 500
+            }
+          },
+          "required": [
+            "patient_name",
+            "blood_group",
+            "units",
+            "hospital",
+            "contact_phone",
+            "urgency",
+            "city"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
