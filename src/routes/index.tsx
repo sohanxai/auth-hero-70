@@ -21,6 +21,16 @@ const statsQO = queryOptions({ queryKey: ["stats"], queryFn: () => getStats() })
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(statsQO),
+  head: () => ({
+    meta: [
+      { title: "BloodConnect — Find Blood Donors & Blood Banks Instantly" },
+      { name: "description", content: "Search verified blood donors, blood banks and hospitals across India in seconds, and join upcoming donation camps." },
+      { property: "og:title", content: "BloodConnect — Find Blood Donors Instantly" },
+      { property: "og:description", content: "Verified donors, blood banks and hospitals connected in real time across India." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Home,
   errorComponent: ({ error }) => <div className="p-12 text-center text-muted-foreground">{error.message}</div>,
 });
