@@ -12,9 +12,9 @@ import { submitContactMessage } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({ meta: [
-    { title: "Contact BloodConnect — Support & Partnerships" },
+    { title: "Contact BloodConnect \u2014 Support & Partnerships" },
     { name: "description", content: "Reach the BloodConnect team for emergency support, hospital partnerships or general questions." },
-    { property: "og:title", content: "Contact BloodConnect — Support & Partnerships" },
+    { property: "og:title", content: "Contact BloodConnect \u2014 Support & Partnerships" },
     { property: "og:description", content: "Reach the BloodConnect team for emergency support, hospital partnerships or general questions." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },

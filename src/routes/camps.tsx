@@ -7,9 +7,9 @@ import { BackButton } from "@/components/site/BackButton";
 
 export const Route = createFileRoute("/camps")({
   head: () => ({ meta: [
-    { title: "Blood Donation Camps Near You — BloodConnect" },
+    { title: "Blood Donation Camps Near You \u2014 BloodConnect" },
     { name: "description", content: "Browse upcoming blood donation camps across India and reserve your slot in a few taps." },
-    { property: "og:title", content: "Blood Donation Camps Near You — BloodConnect" },
+    { property: "og:title", content: "Blood Donation Camps Near You \u2014 BloodConnect" },
     { property: "og:description", content: "Browse upcoming blood donation camps across India and reserve your slot in a few taps." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },

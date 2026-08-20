@@ -6,10 +6,10 @@ import { BackButton } from "@/components/site/BackButton";
 
 export const Route = createFileRoute("/about")({
   head: () => ({ meta: [
-    { title: "About BloodConnect — Our Mission" },
-    { name: "description", content: "BloodConnect is India"s AI-powered platform connecting donors, blood banks and hospitals in real time." },
-    { property: "og:title", content: "About BloodConnect — Our Mission" },
-    { property: "og:description", content: "BloodConnect is India"s AI-powered platform connecting donors, blood banks and hospitals in real time." },
+    { title: "About BloodConnect \u2014 Our Mission" },
+    { name: "description", content: "BloodConnect is India's AI-powered platform connecting donors, blood banks and hospitals in real time." },
+    { property: "og:title", content: "About BloodConnect \u2014 Our Mission" },
+    { property: "og:description", content: "BloodConnect is India's AI-powered platform connecting donors, blood banks and hospitals in real time." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
   ]}),

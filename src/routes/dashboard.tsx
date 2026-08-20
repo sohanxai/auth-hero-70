@@ -12,9 +12,9 @@ import { BloodGroupBadge } from "@/components/site/BloodGroupBadge";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [
-    { title: "Your Dashboard — BloodConnect" },
+    { title: "Your Dashboard \u2014 BloodConnect" },
     { name: "description", content: "Track your donations, requests and availability status in one place." },
-    { property: "og:title", content: "Your Dashboard — BloodConnect" },
+    { property: "og:title", content: "Your Dashboard \u2014 BloodConnect" },
     { property: "og:description", content: "Track your donations, requests and availability status in one place." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
