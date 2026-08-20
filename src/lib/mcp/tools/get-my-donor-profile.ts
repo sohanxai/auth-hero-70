@@ -22,6 +22,8 @@ export default defineTool({
       .from("donors")
       .select("*")
       .eq("user_id", ctx.getUserId())
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {
