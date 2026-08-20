@@ -99,7 +99,6 @@ export const registerDonor = createServerFn({ method: "POST" })
   .inputValidator((input) => donorSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const existing = await supabase.from("donors").select("id").eq("user_id", userId).maybeSingle();
     const payload = {
       user_id: userId,
       full_name: data.full_name,
@@ -112,11 +111,7 @@ export const registerDonor = createServerFn({ method: "POST" })
       weight: data.weight ?? null,
       last_donation_date: data.last_donation_date || null,
     };
-    if (existing.data?.id) {
-      const { error } = await supabase.from("donors").update(payload).eq("id", existing.data.id);
-      if (error) throw new Error(error.message);
-      return { id: existing.data.id, updated: true };
-    }
+    // Every registration is stored as a separate record — never overwrite previous ones.
     const { data: row, error } = await supabase.from("donors").insert(payload).select("id").single();
     if (error) throw new Error(error.message);
     return { id: row.id, updated: false };
@@ -191,17 +186,30 @@ export const getMyDonor = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
-      .from("donors").select("*").eq("user_id", context.userId).maybeSingle();
+      .from("donors").select("*").eq("user_id", context.userId)
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
     if (error) throw new Error(error.message);
     return { donor: data };
   });
 
+export const getMyDonors = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("donors").select("*").eq("user_id", context.userId)
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return { donors: data ?? [] };
+  });
+
 export const toggleAvailability = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ is_available: z.boolean() }).parse(input))
+  .inputValidator((input) => z.object({ is_available: z.boolean(), id: z.string().uuid().optional() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    let q = context.supabase
       .from("donors").update({ is_available: data.is_available }).eq("user_id", context.userId);
+    if (data.id) q = q.eq("id", data.id);
+    const { error } = await q;
     if (error) throw new Error(error.message);
     return { ok: true };
   });
