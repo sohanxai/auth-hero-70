@@ -11,7 +11,14 @@ import { BackButton } from "@/components/site/BackButton";
 import { submitContactMessage } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({ meta: [{ title: "Contact — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Contact BloodConnect \u2014 Support & Partnerships" },
+    { name: "description", content: "Reach the BloodConnect team for emergency support, hospital partnerships or general questions." },
+    { property: "og:title", content: "Contact BloodConnect \u2014 Support & Partnerships" },
+    { property: "og:description", content: "Reach the BloodConnect team for emergency support, hospital partnerships or general questions." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: Contact,
 });
 

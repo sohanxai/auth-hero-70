@@ -14,7 +14,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { registerBloodBank } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/blood-bank-register")({
-  head: () => ({ meta: [{ title: "Blood Bank Registration — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Register Your Blood Bank \u2014 BloodConnect" },
+    { name: "description", content: "List your blood bank on BloodConnect and publish live inventory to nearby hospitals." },
+    { property: "og:title", content: "Register Your Blood Bank \u2014 BloodConnect" },
+    { property: "og:description", content: "List your blood bank on BloodConnect and publish live inventory to nearby hospitals." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: BankRegister,
 });
 

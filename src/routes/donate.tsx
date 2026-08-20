@@ -13,7 +13,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { registerDonor } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/donate")({
-  head: () => ({ meta: [{ title: "Become a Donor — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Become a Blood Donor \u2014 BloodConnect" },
+    { name: "description", content: "Register as a verified blood donor and get notified when someone nearby needs your blood group." },
+    { property: "og:title", content: "Become a Blood Donor \u2014 BloodConnect" },
+    { property: "og:description", content: "Register as a verified blood donor and get notified when someone nearby needs your blood group." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: DonatePage,
 });
 

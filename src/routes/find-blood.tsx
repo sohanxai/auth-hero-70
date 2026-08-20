@@ -13,7 +13,14 @@ import { BLOOD_GROUPS, STATES, STATE_CITIES, generateDemoBloodBanks, generateDem
 import { searchDonors, listBloodBanks } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/find-blood")({
-  head: () => ({ meta: [{ title: "Find Blood — BloodConnect" }, { name: "description", content: "Search verified donors and blood banks across India." }] }),
+  head: () => ({ meta: [
+    { title: "Find Blood Donors & Blood Banks \u2014 BloodConnect" },
+    { name: "description", content: "Search verified donors and blood banks across India by blood group and city." },
+    { property: "og:title", content: "Find Blood Donors & Blood Banks \u2014 BloodConnect" },
+    { property: "og:description", content: "Search verified donors and blood banks across India by blood group and city." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: FindBlood,
 });
 

@@ -18,7 +18,14 @@ export const Route = createFileRoute("/auth")({
     mode: s.mode === "signup" ? "signup" : "login",
     next: typeof s.next === "string" && s.next.startsWith("/") ? s.next : undefined,
   }),
-  head: () => ({ meta: [{ title: "Login / Register — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Login or Register \u2014 BloodConnect" },
+    { name: "description", content: "Sign in or create your BloodConnect account to request blood, donate, or manage your organisation." },
+    { property: "og:title", content: "Login or Register \u2014 BloodConnect" },
+    { property: "og:description", content: "Sign in or create your BloodConnect account to request blood, donate, or manage your organisation." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: AuthPage,
 });
 

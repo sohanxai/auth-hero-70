@@ -8,7 +8,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyHospital } from "@/lib/bloodconnect.functions";
 
 export const Route = createFileRoute("/hospital-dashboard")({
-  head: () => ({ meta: [{ title: "Hospital Dashboard — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Hospital Dashboard \u2014 BloodConnect" },
+    { name: "description", content: "Manage blood requests, inventory needs and donor responses for your hospital." },
+    { property: "og:title", content: "Hospital Dashboard \u2014 BloodConnect" },
+    { property: "og:description", content: "Manage blood requests, inventory needs and donor responses for your hospital." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: HospitalDashboard,
 });
 

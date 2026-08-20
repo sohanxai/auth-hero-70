@@ -10,7 +10,14 @@ import { SearchableSelect } from "@/components/site/SearchableSelect";
 import { STATES, STATE_CITIES } from "@/lib/blood-data";
 
 export const Route = createFileRoute("/hospitals")({
-  head: () => ({ meta: [{ title: "Partner Hospitals — BloodConnect" }] }),
+  head: () => ({ meta: [
+    { title: "Partner Hospitals \u2014 BloodConnect" },
+    { name: "description", content: "Explore hospitals partnered with BloodConnect for fast, verified blood supply." },
+    { property: "og:title", content: "Partner Hospitals \u2014 BloodConnect" },
+    { property: "og:description", content: "Explore hospitals partnered with BloodConnect for fast, verified blood supply." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ]}),
   component: HospitalsPage,
 });
 
