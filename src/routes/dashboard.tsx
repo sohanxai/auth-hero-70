@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { getMyDonor, toggleAvailability, getMyRequests } from "@/lib/bloodconnect.functions";
+import { getMyDonors, toggleAvailability, getMyRequests } from "@/lib/bloodconnect.functions";
 import { BloodGroupBadge } from "@/components/site/BloodGroupBadge";
 
 export const Route = createFileRoute("/dashboard")({
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/dashboard")({
 function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [donor, setDonor] = useState<any>(null);
+  const [donors, setDonors] = useState<any[]>([]);
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,17 +35,16 @@ function Dashboard() {
       if (error || !data.user) { navigate({ to: "/auth" }); return; }
       setUser(data.user);
       try {
-        const [d, r] = await Promise.all([getMyDonor(), getMyRequests()]);
-        setDonor(d.donor); setRequests(r.requests);
+        const [d, r] = await Promise.all([getMyDonors(), getMyRequests()]);
+        setDonors(d.donors); setRequests(r.requests);
       } catch (e: any) { toast.error(e.message); }
       finally { setLoading(false); }
     })();
   }, [navigate]);
 
-  async function onToggle(v: boolean) {
-    if (!donor) return;
-    setDonor({ ...donor, is_available: v });
-    try { await toggleAvailability({ data: { is_available: v } }); toast.success(v ? "You're available" : "Set to unavailable"); }
+  async function onToggle(id: string, v: boolean) {
+    setDonors((prev) => prev.map((d) => (d.id === id ? { ...d, is_available: v } : d)));
+    try { await toggleAvailability({ data: { is_available: v, id } }); toast.success(v ? "You're available" : "Set to unavailable"); }
     catch (e: any) { toast.error(e.message); }
   }
 
@@ -69,11 +68,13 @@ function Dashboard() {
       <div className="grid lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-xl flex items-center gap-2"><UserIcon className="h-5 w-5 text-primary" /> Donor Profile</h2>
-            <Link to="/donate"><Button size="sm" variant="outline"><Edit className="mr-2 h-3 w-3" /> {donor ? "Edit" : "Create"}</Button></Link>
+            <h2 className="font-semibold text-xl flex items-center gap-2"><UserIcon className="h-5 w-5 text-primary" /> Donor Registrations {donors.length > 0 && <Badge variant="secondary">{donors.length}</Badge>}</h2>
+            <Link to="/donate"><Button size="sm" variant="outline"><Edit className="mr-2 h-3 w-3" /> Add new</Button></Link>
           </div>
-          {donor ? (
-            <div className="space-y-4">
+          {donors.length > 0 ? (
+            <div className="space-y-6">
+              {donors.map((donor) => (
+              <div key={donor.id} className="space-y-4 rounded-xl border p-4">
               <div className="flex items-center gap-4">
                 <BloodGroupBadge group={donor.blood_group} />
                 <div className="flex-1">
@@ -90,18 +91,20 @@ function Dashboard() {
                   <p className="font-semibold">Availability</p>
                   <p className="text-xs text-muted-foreground">Turn off if you can't donate right now.</p>
                 </div>
-                <Switch checked={donor.is_available} onCheckedChange={onToggle} />
+                <Switch checked={donor.is_available} onCheckedChange={(v) => onToggle(donor.id, v)} />
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">
                 <Stat label="Donations" value={donor.donations_count} />
                 <Stat label="Last donation" value={donor.last_donation_date ?? "—"} />
                 <Stat label="Lives helped" value={(donor.donations_count ?? 0) * 3} />
               </div>
+              </div>
+              ))}
             </div>
           ) : (
             <div className="text-center py-10">
               <Heart className="mx-auto h-10 w-10 text-primary" />
-              <p className="mt-3 font-semibold">No donor profile yet</p>
+              <p className="mt-3 font-semibold">No donor registrations yet</p>
               <p className="text-sm text-muted-foreground mt-1">Register to start saving lives.</p>
               <Link to="/donate"><Button className="mt-4 bg-gradient-primary shadow-glow">Become a Donor</Button></Link>
             </div>
