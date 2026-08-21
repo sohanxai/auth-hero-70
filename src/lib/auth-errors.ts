@@ -30,6 +30,12 @@ export function friendlyAuthError(error: unknown): string {
   if (/already registered|already exists|user already/i.test(message)) {
     return "Email already registered. Please sign in instead.";
   }
+  if (/provider is not enabled|unsupported provider|validation_failed/i.test(message)) {
+    return "Google sign-in isn't enabled yet. Please use email and password, or enable the Google provider in your backend auth settings.";
+  }
+  if (/redirect|url.*not allowed|invalid request.*redirect/i.test(message)) {
+    return "This site's URL isn't allowed for sign-in redirects yet. Add it to your backend auth redirect URLs.";
+  }
   if (/rate limit|too many/i.test(message)) {
     return "Too many attempts. Please wait a moment and try again.";
   }
