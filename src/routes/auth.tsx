@@ -13,6 +13,10 @@ import { getMyBloodBank, getMyHospital } from "@/lib/bloodconnect.functions";
 
 type AuthSearch = { mode?: "login" | "signup"; next?: string };
 
+// Google sign-in only renders once the provider is actually enabled in Supabase Auth,
+// otherwise the endpoint returns "Unsupported provider: provider is not enabled".
+const GOOGLE_ENABLED = import.meta.env.VITE_ENABLE_GOOGLE_AUTH === "true";
+
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): AuthSearch => ({
     mode: s.mode === "signup" ? "signup" : "login",
@@ -228,8 +232,10 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
-              <OrDivider />
-              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              {GOOGLE_ENABLED && (<>
+                <OrDivider />
+                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              </>)}
             </form>
             )}
           </TabsContent>
@@ -242,8 +248,10 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Creating account..." : "Create account"}
               </Button>
-              <OrDivider />
-              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              {GOOGLE_ENABLED && (<>
+                <OrDivider />
+                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              </>)}
             </form>
           </TabsContent>
         </Tabs>
