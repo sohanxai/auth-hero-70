@@ -100,3 +100,37 @@ Cloud console.
 Client-side routing works on all supported hosts without `_redirects`,
 `vercel.json`, or hash routing. If a deep link 404s, verify the route file
 exists under `src/routes/` and that the build succeeded.
+
+## Vercel (turnkey)
+
+`vercel.json` is committed, so Vercel needs no manual build settings:
+
+- install: `npm install`
+- build: `npm run build:vercel` (Nitro `vercel` preset → `.vercel/output`, Build Output API)
+
+### Required environment variables (Project Settings → Environment Variables)
+
+| Name | Scope | Value |
+| --- | --- | --- |
+| `VITE_SUPABASE_URL` | all | `https://<project-ref>.supabase.co` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | all | publishable / anon key |
+| `SUPABASE_URL` | all | same as above |
+| `SUPABASE_PUBLISHABLE_KEY` | all | same as above |
+
+No service-role key is needed — every server function uses either the
+authenticated user's token (`requireSupabaseAuth`) or the anon publishable
+key via `src/lib/supabase-public.server.ts`.
+
+### Database
+
+All schema lives in `supabase/migrations/`. Apply it to the target project with
+`supabase db push` (or paste the SQL in the Supabase SQL editor). Donor
+registrations are append-only: `public.donors` has no unique constraint on
+`user_id`, and `registerDonor` always `INSERT`s a new row, so historical
+registrations are never overwritten.
+
+### Supabase Auth settings after deploy
+
+- Site URL: `https://<your-domain>`
+- Redirect URLs: `https://<your-domain>/**`, including `/reset-password`
+- Google provider: enable it and add `https://<project-ref>.supabase.co/auth/v1/callback`

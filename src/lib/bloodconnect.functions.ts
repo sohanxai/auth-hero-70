@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabase as anonClient } from "@/integrations/supabase/client";
 
 // Public: search donors (uses anon client, RLS allows public read).
 export const searchDonors = createServerFn({ method: "GET" })
@@ -12,6 +11,8 @@ export const searchDonors = createServerFn({ method: "GET" })
     }).parse(input),
   )
   .handler(async ({ data }) => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
     const { data: rows, error } = await anonClient
       .from("donors")
       .select("id, full_name, blood_group, phone, city, area, is_available, reliability_score, donations_count, last_donation_date")
@@ -28,6 +29,8 @@ export const searchDonors = createServerFn({ method: "GET" })
 export const listBloodBanks = createServerFn({ method: "GET" })
   .inputValidator((input) => z.object({ city: z.string().min(1).max(80) }).parse(input))
   .handler(async ({ data }) => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
     const { data: rows, error } = await anonClient
       .from("blood_banks")
       .select("*")
@@ -40,6 +43,8 @@ export const listBloodBanks = createServerFn({ method: "GET" })
 export const listHospitals = createServerFn({ method: "GET" })
   .inputValidator((input) => z.object({ city: z.string().min(1).max(80).optional().or(z.literal("")) }).parse(input))
   .handler(async ({ data }) => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
     let q = anonClient
       .from("hospitals")
       .select("id, name, registration_number, contact_person, email, phone, state, city, area, address, beds, specialties, verified, status")
@@ -55,6 +60,8 @@ export const listHospitals = createServerFn({ method: "GET" })
 // Public: list active emergency requests
 export const listActiveRequests = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
     const { data: rows, error } = await anonClient
       .from("blood_requests")
       .select("*")
@@ -67,6 +74,8 @@ export const listActiveRequests = createServerFn({ method: "GET" })
 
 // Public stats
 export const getStats = createServerFn({ method: "GET" }).handler(async () => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
   const [d, b, r] = await Promise.all([
     anonClient.from("donors").select("id", { count: "exact", head: true }),
     anonClient.from("blood_banks").select("id", { count: "exact", head: true }),
@@ -306,6 +315,8 @@ const contactSchema = z.object({
 export const submitContactMessage = createServerFn({ method: "POST" })
   .inputValidator((input) => contactSchema.parse(input))
   .handler(async ({ data }) => {
+    const { publicSupabase } = await import("@/lib/supabase-public.server");
+    const anonClient = publicSupabase();
     const { data: row, error } = await anonClient
       .from("contact_messages")
       .insert({ ...data, user_id: null })
