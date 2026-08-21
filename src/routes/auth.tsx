@@ -232,8 +232,10 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
-              <OrDivider />
-              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              {GOOGLE_ENABLED && (<>
+                <OrDivider />
+                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              </>)}
             </form>
             )}
           </TabsContent>
@@ -246,8 +248,10 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Creating account..." : "Create account"}
               </Button>
-              <OrDivider />
-              <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              {GOOGLE_ENABLED && (<>
+                <OrDivider />
+                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
+              </>)}
             </form>
           </TabsContent>
         </Tabs>
