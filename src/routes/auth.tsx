@@ -160,14 +160,22 @@ function AuthPage() {
   async function handleGoogle() {
     setOauthLoading(true);
     try {
+      const callback = new URL("/oauth-callback", window.location.origin);
+      if (next) callback.searchParams.set("next", next);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}${next ?? "/dashboard"}` },
+        options: {
+          redirectTo: callback.toString(),
+          queryParams: { access_type: "offline", prompt: "select_account" },
+        },
       });
-      if (error) toast.error(friendlyAuthError(error));
+      if (error) {
+        toast.error(friendlyAuthError(error));
+        setOauthLoading(false);
+      }
+      // On success the browser navigates to Google; keep the button disabled.
     } catch (err) {
       toast.error(friendlyAuthError(err));
-    } finally {
       setOauthLoading(false);
     }
   }

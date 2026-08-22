@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as OauthCallbackRouteImport } from './routes/oauth-callback'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as HospitalsRouteImport } from './routes/hospitals'
 import { Route as HospitalRegisterRouteImport } from './routes/hospital-register'
@@ -32,6 +33,11 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth-callback',
+  path: '/oauth-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/hospital-register': typeof HospitalRegisterRoute
   '/hospitals': typeof HospitalsRoute
   '/mcp': typeof McpRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/hospital-register': typeof HospitalRegisterRoute
   '/hospitals': typeof HospitalsRoute
   '/mcp': typeof McpRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/hospital-register': typeof HospitalRegisterRoute
   '/hospitals': typeof HospitalsRoute
   '/mcp': typeof McpRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/reset-password': typeof ResetPasswordRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/hospital-register'
     | '/hospitals'
     | '/mcp'
+    | '/oauth-callback'
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/hospital-register'
     | '/hospitals'
     | '/mcp'
+    | '/oauth-callback'
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/hospital-register'
     | '/hospitals'
     | '/mcp'
+    | '/oauth-callback'
     | '/reset-password'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   HospitalRegisterRoute: typeof HospitalRegisterRoute
   HospitalsRoute: typeof HospitalsRoute
   McpRoute: typeof McpRoute
+  OauthCallbackRoute: typeof OauthCallbackRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -287,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oauth-callback': {
+      id: '/oauth-callback'
+      path: '/oauth-callback'
+      fullPath: '/oauth-callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -433,6 +453,7 @@ const rootRouteChildren: RootRouteChildren = {
   HospitalRegisterRoute: HospitalRegisterRoute,
   HospitalsRoute: HospitalsRoute,
   McpRoute: McpRoute,
+  OauthCallbackRoute: OauthCallbackRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
