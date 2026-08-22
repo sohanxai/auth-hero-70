@@ -14,7 +14,159 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      blood_banks: {
+        Row: {
+          address: string | null
+          area: string | null
+          city: string
+          created_at: string
+          id: string
+          inventory: Json
+          name: string
+          phone: string
+        }
+        Insert: {
+          address?: string | null
+          area?: string | null
+          city: string
+          created_at?: string
+          id?: string
+          inventory?: Json
+          name: string
+          phone: string
+        }
+        Update: {
+          address?: string | null
+          area?: string | null
+          city?: string
+          created_at?: string
+          id?: string
+          inventory?: Json
+          name?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      blood_requests: {
+        Row: {
+          blood_group: string
+          city: string
+          contact_phone: string
+          created_at: string
+          hospital: string
+          id: string
+          notes: string | null
+          patient_name: string
+          status: string
+          units: number
+          urgency: string
+          user_id: string | null
+        }
+        Insert: {
+          blood_group: string
+          city: string
+          contact_phone: string
+          created_at?: string
+          hospital: string
+          id?: string
+          notes?: string | null
+          patient_name: string
+          status?: string
+          units?: number
+          urgency?: string
+          user_id?: string | null
+        }
+        Update: {
+          blood_group?: string
+          city?: string
+          contact_phone?: string
+          created_at?: string
+          hospital?: string
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          status?: string
+          units?: number
+          urgency?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      donors: {
+        Row: {
+          age: number | null
+          area: string | null
+          blood_group: string
+          city: string
+          created_at: string
+          donations_count: number
+          email: string | null
+          full_name: string
+          id: string
+          is_available: boolean
+          last_donation_date: string | null
+          phone: string
+          reliability_score: number
+          user_id: string | null
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          area?: string | null
+          blood_group: string
+          city: string
+          created_at?: string
+          donations_count?: number
+          email?: string | null
+          full_name: string
+          id?: string
+          is_available?: boolean
+          last_donation_date?: string | null
+          phone: string
+          reliability_score?: number
+          user_id?: string | null
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          area?: string | null
+          blood_group?: string
+          city?: string
+          created_at?: string
+          donations_count?: number
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_available?: boolean
+          last_donation_date?: string | null
+          phone?: string
+          reliability_score?: number
+          user_id?: string | null
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
