@@ -13,10 +13,6 @@ import { getMyBloodBank, getMyHospital } from "@/lib/bloodconnect.functions";
 
 type AuthSearch = { mode?: "login" | "signup"; next?: string };
 
-// Google sign-in only renders once the provider is actually enabled in Supabase Auth,
-// otherwise the endpoint returns "Unsupported provider: provider is not enabled".
-const GOOGLE_ENABLED = import.meta.env.VITE_ENABLE_GOOGLE_AUTH === "true";
-
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): AuthSearch => ({
     mode: s.mode === "signup" ? "signup" : "login",
@@ -39,7 +35,6 @@ function AuthPage() {
   const [tab, setTab] = useState<"login" | "signup">(mode ?? "login");
   const [loading, setLoading] = useState(false);
   const [forgot, setForgot] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth
@@ -157,29 +152,6 @@ function AuthPage() {
     return navigate({ to: "/dashboard" });
   }
 
-  async function handleGoogle() {
-    setOauthLoading(true);
-    try {
-      const callback = new URL("/oauth-callback", window.location.origin);
-      if (next) callback.searchParams.set("next", next);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: callback.toString(),
-          queryParams: { access_type: "offline", prompt: "select_account" },
-        },
-      });
-      if (error) {
-        toast.error(friendlyAuthError(error));
-        setOauthLoading(false);
-      }
-      // On success the browser navigates to Google; keep the button disabled.
-    } catch (err) {
-      toast.error(friendlyAuthError(err));
-      setOauthLoading(false);
-    }
-  }
-
   async function handleForgot(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
@@ -240,10 +212,6 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Signing in..." : "Sign in"}
               </Button>
-              {GOOGLE_ENABLED && (<>
-                <OrDivider />
-                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
-              </>)}
             </form>
             )}
           </TabsContent>
@@ -256,39 +224,11 @@ function AuthPage() {
               <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow">
                 {loading ? "Creating account..." : "Create account"}
               </Button>
-              {GOOGLE_ENABLED && (<>
-                <OrDivider />
-                <GoogleButton onClick={handleGoogle} disabled={oauthLoading} />
-              </>)}
             </form>
           </TabsContent>
         </Tabs>
       </Card>
     </div>
-  );
-}
-
-function OrDivider() {
-  return (
-    <div className="flex items-center gap-3 py-1">
-      <span className="h-px flex-1 bg-border" />
-      <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
-      <span className="h-px flex-1 bg-border" />
-    </div>
-  );
-}
-
-function GoogleButton({ onClick, disabled }: { onClick: () => void; disabled?: boolean }) {
-  return (
-    <Button type="button" variant="outline" className="w-full gap-2" onClick={onClick} disabled={disabled}>
-      <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.2-2.2H12v4h6.6c-.1 1.1-.9 2.8-2.5 3.9l-.02.15 3.6 2.8.25.03c2.3-2.1 3.6-5.2 3.6-8.7Z" />
-        <path fill="#34A853" d="M12 24c3.3 0 6-1.1 8-2.9l-3.8-3c-1 .7-2.4 1.2-4.2 1.2a7.3 7.3 0 0 1-6.9-5l-.14.01-3.7 2.9-.05.14A12 12 0 0 0 12 24Z" />
-        <path fill="#FBBC05" d="M5.1 14.3a7.4 7.4 0 0 1-.4-2.3c0-.8.15-1.6.39-2.3v-.15l-3.8-2.9-.12.06A12 12 0 0 0 0 12c0 1.9.5 3.8 1.2 5.3l3.9-3Z" />
-        <path fill="#EB4335" d="M12 4.7c2.3 0 3.9 1 4.8 1.8l3.5-3.4C18 1.2 15.3 0 12 0A12 12 0 0 0 1.2 6.7l3.9 3A7.3 7.3 0 0 1 12 4.7Z" />
-      </svg>
-      {disabled ? "Connecting..." : "Continue with Google"}
-    </Button>
   );
 }
 
