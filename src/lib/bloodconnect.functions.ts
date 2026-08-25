@@ -16,8 +16,8 @@ export const searchDonors = createServerFn({ method: "GET" })
     const { data: rows, error } = await anonClient
       .from("donors")
       .select("id, full_name, blood_group, phone, city, area, is_available, reliability_score, donations_count, last_donation_date")
-      .eq("blood_group", data.blood_group)
-      .eq("city", data.city)
+      .eq("blood_group", data.blood_group.trim())
+      .ilike("city", data.city.trim())
       .order("is_available", { ascending: false })
       .order("reliability_score", { ascending: false })
       .limit(50);
@@ -34,7 +34,7 @@ export const listBloodBanks = createServerFn({ method: "GET" })
     const { data: rows, error } = await anonClient
       .from("blood_banks")
       .select("*")
-      .eq("city", data.city)
+      .ilike("city", data.city.trim())
       .order("name");
     if (error) return { banks: [], error: error.message };
     return { banks: rows ?? [], error: null };
@@ -51,7 +51,7 @@ export const listHospitals = createServerFn({ method: "GET" })
       .order("verified", { ascending: false })
       .order("name")
       .limit(60);
-    if (data.city) q = q.eq("city", data.city);
+    if (data.city) q = q.ilike("city", data.city.trim());
     const { data: rows, error } = await q;
     if (error) return { hospitals: [], error: error.message };
     return { hospitals: rows ?? [], error: null };
