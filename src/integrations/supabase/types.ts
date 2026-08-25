@@ -18,32 +18,59 @@ export type Database = {
         Row: {
           address: string | null
           area: string | null
+          capacity: number | null
           city: string
+          contact_person: string | null
           created_at: string
+          email: string | null
           id: string
           inventory: Json
+          license: string | null
           name: string
           phone: string
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          verified: boolean
         }
         Insert: {
           address?: string | null
           area?: string | null
+          capacity?: number | null
           city: string
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           inventory?: Json
+          license?: string | null
           name: string
           phone: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean
         }
         Update: {
           address?: string | null
           area?: string | null
+          capacity?: number | null
           city?: string
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           inventory?: Json
+          license?: string | null
           name?: string
           phone?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean
         }
         Relationships: []
       }
@@ -88,6 +115,78 @@ export type Database = {
           status?: string
           units?: number
           urgency?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      camp_registrations: {
+        Row: {
+          blood_group: string
+          camp_city: string
+          camp_title: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          phone: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          blood_group: string
+          camp_city: string
+          camp_title: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          phone: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          blood_group?: string
+          camp_city?: string
+          camp_title?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          phone?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string
+          subject: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string
+          subject: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
           user_id?: string | null
         }
         Relationships: []
@@ -143,6 +242,66 @@ export type Database = {
           reliability_score?: number
           user_id?: string | null
           weight?: number | null
+        }
+        Relationships: []
+      }
+      hospitals: {
+        Row: {
+          address: string
+          area: string | null
+          beds: number | null
+          city: string
+          contact_person: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          registration_number: string
+          specialties: string[]
+          state: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          verified: boolean
+        }
+        Insert: {
+          address: string
+          area?: string | null
+          beds?: number | null
+          city: string
+          contact_person: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          registration_number: string
+          specialties?: string[]
+          state: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean
+        }
+        Update: {
+          address?: string
+          area?: string | null
+          beds?: number | null
+          city?: string
+          contact_person?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          registration_number?: string
+          specialties?: string[]
+          state?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          verified?: boolean
         }
         Relationships: []
       }
