@@ -36,6 +36,9 @@ export function friendlyAuthError(error: unknown): string {
   if (/redirect|url.*not allowed|invalid request.*redirect/i.test(message)) {
     return "This site's URL isn't allowed for sign-in redirects yet. Add it to your backend auth redirect URLs.";
   }
+  if (/weak|pwned|easy to guess|leaked/i.test(message)) {
+    return "That password is too easy to guess. Try adding a few more characters or numbers.";
+  }
   if (/rate limit|too many/i.test(message)) {
     return "Too many attempts. Please wait a moment and try again.";
   }
